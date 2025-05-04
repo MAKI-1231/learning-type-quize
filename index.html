@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>英語学習タイプ診断</title>
+  <style>
+    body {
+      font-family: "Hiragino Maru Gothic ProN", "Rounded Mplus 1c", sans-serif;
+      background-color: #e6f4ea;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    h1 {
+      color: #4CAF50;
+      font-size: 6vw;
+      margin-top: 30px;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      font-size: 4vw;
+      margin-bottom: 20px;
+    }
+
+    #question {
+      font-size: 5vw;
+      margin: 30px auto 10px;
+      max-width: 90%;
+    }
+
+    #progress {
+      font-size: 3.5vw;
+      margin-bottom: 20px;
+    }
+
+    button {
+      font-family: inherit;
+      font-size: 4vw;
+      margin: 10px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+      transition: background-color 0.3s;
+    }
+
+    #yesBtn {
+      background-color: #b2dfdb;
+      color: #333;
+    }
+
+    #noBtn {
+      background-color: #f8bbd0;
+      color: #333;
+    }
+
+    #yesBtn:hover {
+      background-color: #a3cec9;
+    }
+
+    #noBtn:hover {
+      background-color: #f4a6c2;
+    }
+
+    #result {
+      font-size: 4.5vw;
+      padding: 30px;
+      line-height: 1.6;
+    }
+
+    .tip {
+      font-size: 4vw;
+      color: #2e7d32;
+      margin: 30px 0 10px;
+    }
+
+    .line-instruction {
+      font-size: 3.5vw;
+      margin-bottom: 5px;
+      color: #444;
+    }
+
+    .link-button {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 12px 24px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-size: 4vw;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 3vw;
+      color: #777;
+    }
+
+    @media (min-width: 768px) {
+      h1 { font-size: 36px; }
+      .subtitle { font-size: 24px; }
+      #question { font-size: 28px; }
+      #progress { font-size: 18px; }
+      button { font-size: 20px; }
+      #result { font-size: 22px; }
+      .tip { font-size: 20px; }
+      .line-instruction { font-size: 18px; }
+      .link-button { font-size: 20px; }
+      footer { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <h1>英語学習タイプ診断</h1>
+  <div class="subtitle">36個の質問に答えて、あなたの学び方がわかる！これで続けられる✨</div>
+  <div id="question">ここに質問が表示されます</div>
+  <div id="progress"></div>
+  <button id="yesBtn" onclick="answer(true)">YES</button>
+  <button id="noBtn" onclick="answer(false)">NO</button>
+  <div id="result"></div>
+  <footer>さぼてん英会話</footer>
+
+  <script>
+    const questions = [
+      { type: 1, text: "ルールを守ることを優先する？" },
+      { type: 1, text: "休むと人より遅れると焦っちゃう？" },
+      { type: 1, text: "ゴロゴロすると罪悪感がある？" },
+      { type: 1, text: "「ちゃんとしなきゃ」と思いがち？" },
+      { type: 2, text: "誘われると断るのが苦手？" },
+      { type: 2, text: "自分の意志より喜ばれることを優先する？" },
+      { type: 2, text: "困っている人を放っておけない？" },
+      { type: 2, text: "感謝されないとモヤモヤする？" },
+      { type: 3, text: "負けず嫌い？" },
+      { type: 3, text: "褒められるとやる気が出る？" },
+      { type: 3, text: "理想の自分像がある？" },
+      { type: 3, text: "自信は根拠がなくてもある？" },
+      { type: 4, text: "人間関係をリセットしたくなる？" },
+      { type: 4, text: "ものづくりが好き？" },
+      { type: 4, text: "空想するのが好き？" },
+      { type: 4, text: "ひとりの時間が好き？" },
+      { type: 5, text: "人前だと緊張する？" },
+      { type: 5, text: "興味があると徹底的に調べる？" },
+      { type: 5, text: "頑固だと言われたことがある？" },
+      { type: 5, text: "カギを閉めたか不安で何度も確認することがある？" },
+      { type: 6, text: "好かれようと頑張ってしまう？" },
+      { type: 6, text: "人間関係でよく疲れる？" },
+      { type: 6, text: "帰宅後に反省会しがち？" },
+      { type: 6, text: "ひとりより誰かと一緒の方が安心？" },
+      { type: 7, text: "自由が一番大事？" },
+      { type: 7, text: "興味が広く浅い？" },
+      { type: 7, text: "髪型や仕事を変えたくなる？" },
+      { type: 7, text: "なにごとも楽しく取り組めるほう？" },
+      { type: 8, text: "弱みを見せるのが苦手？" },
+      { type: 8, text: "自分で決めたい？" },
+      { type: 8, text: "自立した強いひとでいたい？" },
+      { type: 8, text: "意見はハッキリ言う？" },
+      { type: 9, text: "すべきことを先延ばししがち？" },
+      { type: 9, text: "人に合わせる方が多い？" },
+      { type: 9, text: "ケンカや対立は避けたい？" },
+      { type: 9, text: "のんびり系と言われる？" }
+    ];
+
+    const typeDescriptions = {
+      1: "🌱 タイプ1：きちんとしたい完璧主義タイプ<br>まじめで努力家。責任感が強いひと。<br><br>学習スタイルコード：P1",
+      2: "🌸 タイプ2：尽くしすぎ注意な優しさタイプ<br>人のために頑張れるひと<br><br>学習スタイルコード：H2",
+      3: "🔥 タイプ3：努力と成果で魅せるがんばり屋タイプ<br>目標達成が得意なひと<br><br>学習スタイルコード：G3",
+      4: "🎨 タイプ4：個性が光るアーティストタイプ<br>自分らしさを大切にする繊細なひと<br><br>学習スタイルコード：A4",
+      5: "🧠 タイプ5：静かに深く考える知識タイプ<br>冷静で観察力が高いひと<br><br>学習スタイルコード：K5",
+      6: "🛡 タイプ6：じっくり判断する慎重タイプ<br>ちょっと不安になりやすいけど、誠実なひと<br><br>学習スタイルコード：S6",
+      7: "🌈 タイプ7：自由を愛するアイデアマンタイプ<br>好奇心旺盛で明るいひと<br><br>学習スタイルコード：I7",
+      8: "⚡ タイプ8：正直で頼れるリーダータイプ<br>自立心が強く、パワフルなひと<br><br>学習スタイルコード：L8",
+      9: "🍵 タイプ9：癒し系の平和主義タイプ<br>みんなと仲良くしたい優しいひと。<br><br>学習スタイルコード：M9"
+    };
+
+    const typeLearningTips = {
+      1: "ルーティン学習タイプ🌱 毎日コツコツ取り組む学び方がおすすめ！",
+      2: "コミュニケーション学習タイプ🌸 会話を通して楽しく覚える方法がぴったり！",
+      3: "チャレンジ学習タイプ🔥 目標を立てて達成していく方法が向いてます！",
+      4: "クリエイティブ学習タイプ🎨 映像や音楽、アートなど感性を活かして学ぼう！",
+      5: "リサーチ学習タイプ🧠 興味のある分野を徹底的に調べて英語と結びつけよう！",
+      6: "サポート学習タイプ🛡 信頼できる先生や仲間と一緒に学ぶのがおすすめ！",
+      7: "アクティブ学習タイプ🌈 身体を動かしながら実践的に覚えていく方法が合う！",
+      8: "リーダーシップ学習タイプ⚡ 主体的に選び、自分のペースで学ぶのが得意！",
+      9: "マイペース学習タイプ🍵 焦らずリラックスして自分のペースで続けるのが大切！"
+    };
+
+    let scores = Array(9).fill(0);
+    let current = 0;
+
+    function answer(isYes) {
+      if (isYes) scores[questions[current].type - 1]++;
+      current++;
+      if (current >= questions.length) {
+        showResult();
+      } else {
+        showNextQuestion();
+      }
+    }
+
+    function showNextQuestion() {
+      document.getElementById("question").innerText = questions[current].text;
+      document.getElementById("progress").innerText = `${current + 1} / ${questions.length}問`;
+    }
+
+    function showResult() {
+      const max = Math.max(...scores);
+      const type = scores.indexOf(max) + 1;
+      document.getElementById("question").style.display = "none";
+      document.getElementById("progress").style.display = "none";
+      document.getElementById("yesBtn").style.display = "none";
+      document.getElementById("noBtn").style.display = "none";
+      document.getElementById("result").innerHTML = `
+        ${typeDescriptions[type]}<br><br>
+        <strong>あなたに合った英語学習法：</strong><br>
+        ${typeLearningTips[type]}<br><br>
+        <div class="tip">＼ おすすめの学習スタイルがわかる ／</div>
+        <div class="line-instruction">診断結果のコード2文字を、公式LINEからメッセージでお送りください</div>
+        <a href="https://lin.ee/jrpmgOb" target="_blank" class="link-button">公式LINE登録はこちら（無料）</a>
+      `;
+    }
+
+    showNextQuestion();
+  </script>
+</body>
+</html>
